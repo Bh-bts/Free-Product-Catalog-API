@@ -8,6 +8,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 # Initialize app
 app = FastAPI()
@@ -186,3 +188,41 @@ def login_user(user: UserCreate):
     else:
         db.close()
         return {"message": "Invalid username or password"}
+
+
+security = HTTPBasic()
+
+def get_current_user(credentials: HTTPBasicCredentials = Depends(security)):
+    if credentials.username != "admin" or credentials.password != "password@1234":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
+
+
+# API endpoint to delete all products, secured with basic auth
+@app.delete("/clear_products")
+def clear_products(user: str = Depends(get_current_user)):
+    db = SessionLocal()
+
+    # Delete all products
+    db.query(Product).delete()
+    db.commit()
+    db.close()
+
+    return {"message": "All products cleared from the database"}
+
+
+# API endpoint to delete all users, secured with basic auth
+@app.delete("/clear_users")
+def clear_users(user: str = Depends(get_current_user)):
+    db = SessionLocal()
+
+    # Delete all users
+    db.query(User).delete()
+    db.commit()
+    db.close()
+
+    return {"message": "All users cleared from the database"}
