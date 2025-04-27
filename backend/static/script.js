@@ -30,7 +30,7 @@ const data = {
     getSingleProduct: {
         label: "Get Single Product Details",
         method: "GET",
-        request: "/products/{product_id}",
+        request: "/products/1",
         response: {
             "description": "Latest Apple smartphone",
             "id": 3,
@@ -41,13 +41,13 @@ const data = {
     deleteProduct: {
         label: "Delete Product",
         method: "DELETE",
-        request: "/products/{product_id}",
+        request: "/products/1",
         response: { "message": "Product deleted successfully" }
     },
     updateFullProduct: {
         label: "Update Full Product",
         method: "PUT",
-        request: "/products/{product_id}",
+        request: "/products/1",
         payload: {
             "price": 999,
             "id": 3,
@@ -62,7 +62,7 @@ const data = {
     updateProduct: {
         label: "Update Product",
         method: "PATCH",
-        request: "/products/{product_id}",
+        request: "/products/1",
         payload: {
             "price": 999,
             "id": 3,
@@ -79,12 +79,12 @@ const data = {
         method: "POST",
         request: "/register",
         payload: {
-            "username": "bhavin786",
-            "password": "bhavinQA"
+            "username": "John",
+            "password": "John@1234"
         },
         response: {
             "message": "User registered successfully",
-            "user": { "id": 2, "username": "bhavin786" }
+            "user": { "id": 2, "username": "John" }
         }
     },
     registerUnsuccessful: {
@@ -92,7 +92,7 @@ const data = {
         method: "POST",
         request: "/register",
         payload: {
-            "username": "bhavin1"
+            "username": "John1"
         },
         response: {
             "error": "Missing password"
@@ -103,8 +103,8 @@ const data = {
         method: "POST",
         request: "/login",
         payload: {
-            "username": "bhavin786",
-            "password": "bhavinQA"
+            "username": "John",
+            "password": "John@1234"
         },
         response: {
             "message": "Login successful"
@@ -115,7 +115,7 @@ const data = {
         method: "POST",
         request: "/login",
         payload: {
-            "username": "bhavin786"
+            "username": "John1"
         },
         response: {
             "error": "Missing password"
@@ -152,7 +152,15 @@ showData(Object.keys(data)[0]);
 function showData(actionKey) {
     const { request, payload, response } = data[actionKey];
 
-    document.getElementById('requestBox').textContent = request;
+    const baseUrl = window.location.origin;
+    const fullUrl = baseUrl + request;
+
+    const requestBox = document.getElementById('requestBox');
+    requestBox.innerHTML = `
+        <span class="text-blue-600 underline cursor-pointer hover:text-blue-800" onclick="copyToClipboard('${fullUrl}')">
+            ${request}
+        </span>
+    `;
 
     const payloadBox = document.getElementById('payloadBox');
     payloadBox.textContent = payload ? JSON.stringify(payload, null, 4) : "No payload for this request";
@@ -160,3 +168,15 @@ function showData(actionKey) {
     const responseBox = document.getElementById('responseBox');
     responseBox.textContent = JSON.stringify(response, null, 4);
 }
+
+// Helper function to copy text
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text)
+        .then(() => {
+            console.log('Copied:', text);
+        })
+        .catch(err => {
+            console.error('Failed to copy!', err);
+        });
+}
+
