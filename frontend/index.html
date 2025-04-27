@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>API Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-white min-h-screen flex flex-col">
+<header class="border-b p-4 text-center font-bold text-2xl text-purple-700">
+    Test Your API Testing Skills Against a Live Data
+</header>
+
+<div class="flex flex-1">
+    <!-- Sidebar -->
+    <aside class="w-1/4 border-r p-4 space-y-4 mt-2" id="sidebar">
+        <!-- Sidebar items will be populated by JS -->
+    </aside>
+
+    <!-- Main content -->
+    <main class="flex-1 p-6 space-y-6">
+        <div class="grid grid-cols-2 gap-4 items-start">
+            <div class="flex flex-col">
+                <h2 class="font-bold mb-2">Request</h2>
+                <div id="requestBox" class="p-4 border rounded bg-gray-50 text-gray-700">
+                    Click an action to view request
+                </div>
+            </div>
+            <div class="flex flex-col">
+                <h2 class="font-bold mb-2">Payload</h2>
+                <pre id="payloadBox" class="p-4 border rounded bg-gray-50 overflow-auto text-sm text-gray-700">
+            Click an action to view payload
+        </pre>
+            </div>
+            <div class="col-span-2 flex flex-col">
+                <h2 class="font-bold mb-2">Expected Response</h2>
+                <pre id="responseBox" class="p-4 border rounded bg-gray-50 overflow-auto text-sm text-gray-700">
+           Click an action to view response
+        </pre>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script src="script.js"></script>
+<footer class="border-t p-4 text-center text-sm text-gray-500 mt-8">
+    Connect with me:
+    <a href="https://www.linkedin.com/in/bhavin-thumar/" target="_blank" class="text-purple-600 hover:underline mx-2">LinkedIn</a> |
+    <a href="https://github.com/bh-bts" target="_blank" class="text-purple-600 hover:underline mx-2">GitHub</a> |
+    <a href="https://www.youtube.com/@testmateai/" target="_blank" class="text-purple-600 hover:underline mx-2">YouTube</a> |
+    <a href="https://medium.com/@bhavin_thumar" target="_blank" class="text-purple-600 hover:underline mx-2">Medium</a> |
+    <a href="https://substack.com/@bhavinthumar" target="_blank" class="text-purple-600 hover:underline mx-2">Substack</a>
+</footer>
+</body>
+</html>

@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi import HTTPException
 from pydantic import BaseModel
-from database import SessionLocal, engine, Base
-from models import User, Product
+from backend.database import SessionLocal, engine, Base
+from backend.models import User, Product
 from typing import Optional
 
 # Initialize app
@@ -164,6 +164,9 @@ def register_user(user: UserCreate):
 
 @app.post("/login")
 def login_user(user: UserCreate):
+    if not user.password:
+        raise HTTPException(status_code=400, detail="Missing password")
+
     db = SessionLocal()
     existing_user = db.query(User).filter(User.username == user.username).first()
 
