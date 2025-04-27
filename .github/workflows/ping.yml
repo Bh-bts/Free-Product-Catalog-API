@@ -3,7 +3,7 @@ name: Prevent Server Sleep
 on:
   schedule:
     # This cron job runs every 10 minutes (you can adjust the interval as needed)
-    - cron: "*/10 * * * *"  # Runs every 10 minutes
+    - cron: "*/4 * * * *"  # Runs every 10 minutes
 
 jobs:
   ping:
