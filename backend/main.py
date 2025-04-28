@@ -32,7 +32,7 @@ def serve_home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 # API to add a new product
-@app.post("/add_product")
+@app.post("/add-product")
 def add_product(product: ProductCreate):
     db = SessionLocal()
     # Check if product with the same name already exists
@@ -61,7 +61,7 @@ def add_product(product: ProductCreate):
 
 
 # API endpoint to get all products
-@app.get("/products")
+@app.get("/get-products")
 def get_products():
     db = SessionLocal()
     products = db.query(Product).all()
@@ -70,7 +70,7 @@ def get_products():
 
 
 # Get single product by ID
-@app.get("/products/{product_id}")
+@app.get("/product/{product_id}")
 def get_single_product(product_id: int):
     db = SessionLocal()
     product = db.query(Product).filter(Product.id == product_id).first()
@@ -82,7 +82,7 @@ def get_single_product(product_id: int):
 
 
 # Delete product by ID
-@app.delete("/products/{product_id}")
+@app.delete("/delete-product/{product_id}")
 def delete_product(product_id: int):
     db = SessionLocal()
     product = db.query(Product).filter(Product.id == product_id).first()
@@ -96,53 +96,68 @@ def delete_product(product_id: int):
         raise HTTPException(status_code=404, detail="Product not found")
 
 
-# PUT - Full update
-@app.put("/products/{product_id}")
-def update_product(product_id: int, updated_product: ProductCreate):
-    db = SessionLocal()
-    product = db.query(Product).filter(Product.id == product_id).first()
+# Pydantic model for product update
+class ProductUpdate(BaseModel):
+    id: int
+    name: str
+    description: str
+    price: int
 
-    if product is None:
+@app.put("/update-product")
+def update_product(product: ProductUpdate):
+    db = SessionLocal()
+    product_to_update = db.query(Product).filter(Product.id == product.id).first()
+
+    if product_to_update is None:
         db.close()
         raise HTTPException(status_code=404, detail="Product not found")
 
-    product.name = updated_product.name
-    product.description = updated_product.description
-    product.price = updated_product.price
+    # Update product fields
+    product_to_update.name = product.name
+    product_to_update.description = product.description
+    product_to_update.price = product.price
     db.commit()
-    db.refresh(product)
+    db.refresh(product_to_update)
     db.close()
+
     return {"message": "Product updated successfully", "product": {
-        "id": product.id,
-        "name": product.name,
-        "description": product.description,
-        "price": product.price
+        "id": product_to_update.id,
+        "name": product_to_update.name,
+        "description": product_to_update.description,
+        "price": product_to_update.price
     }}
 
 
-# PATCH - Partial update
-@app.patch("/products/{product_id}")
-def partial_update_product(product_id: int, updated_fields: dict):
-    db = SessionLocal()
-    product = db.query(Product).filter(Product.id == product_id).first()
+# Pydantic model for partial product update
+class ProductPartialUpdate(BaseModel):
+    id: int
+    updated_fields: dict
 
-    if product is None:
+@app.patch("/update-product")
+def partial_update_product(product: ProductPartialUpdate):
+    db = SessionLocal()
+    product_to_update = db.query(Product).filter(Product.id == product.id).first()
+
+    if product_to_update is None:
         db.close()
         raise HTTPException(status_code=404, detail="Product not found")
 
-    for field, value in updated_fields.items():
-        if hasattr(product, field):
-            setattr(product, field, value)
+    # Update only the fields provided in the payload
+    for field, value in product.updated_fields.items():
+        if hasattr(product_to_update, field):
+            setattr(product_to_update, field, value)
 
     db.commit()
-    db.refresh(product)
+    db.refresh(product_to_update)
     db.close()
+
     return {"message": "Product partially updated", "product": {
-        "id": product.id,
-        "name": product.name,
-        "description": product.description,
-        "price": product.price
+        "id": product_to_update.id,
+        "name": product_to_update.name,
+        "description": product_to_update.description,
+        "price": product_to_update.price
     }}
+
 
 class UserCreate(BaseModel):
     username: str
@@ -202,8 +217,28 @@ def get_current_user(credentials: HTTPBasicCredentials = Depends(security)):
     return credentials.username
 
 
+# Pydantic model for request body (username)
+class UsernameDelete(BaseModel):
+    username: str
+
+# API endpoint to delete a specific user by username (from the request body)
+@app.delete("/delete-user")
+def delete_user(payload: UsernameDelete):
+    db = SessionLocal()
+    user_to_delete = db.query(User).filter(User.username == payload.username).first()
+
+    if user_to_delete:
+        db.delete(user_to_delete)
+        db.commit()
+        db.close()
+        return {"message": f"User {payload.username} deleted successfully"}
+    else:
+        db.close()
+        raise HTTPException(status_code=404, detail="User not found")
+
+
 # API endpoint to delete all products, secured with basic auth
-@app.delete("/clear_products")
+@app.delete("/clear-products")
 def clear_products(user: str = Depends(get_current_user)):
     db = SessionLocal()
 
@@ -216,7 +251,7 @@ def clear_products(user: str = Depends(get_current_user)):
 
 
 # API endpoint to delete all users, secured with basic auth
-@app.delete("/clear_users")
+@app.delete("/clear-users")
 def clear_users(user: str = Depends(get_current_user)):
     db = SessionLocal()
 

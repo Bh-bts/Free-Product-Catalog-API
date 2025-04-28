@@ -2,7 +2,7 @@ const data = {
     listProducts: {
         label: "Get All Products",
         method: "GET",
-        request: "/products",
+        request: "/get-products",
         response: [
             { "description": "Latest Samsung smartphone", "id": 1, "name": "Samsung s24", "price": 999 },
             { "description": "Latest Apple smartphone", "id": 2, "name": "iPhone 16", "price": 999 }
@@ -11,7 +11,7 @@ const data = {
     addProducts: {
         label: "Add Product",
         method: "POST",
-        request: "/add_product",
+        request: "/add-product",
         payload: {
             "name": "iPhone 16",
             "description": "Latest Apple smartphone",
@@ -30,7 +30,7 @@ const data = {
     getSingleProduct: {
         label: "Get Single Product Details",
         method: "GET",
-        request: "/products/1",
+        request: "/product/1",
         response: {
             "description": "Latest Apple smartphone",
             "id": 3,
@@ -41,13 +41,13 @@ const data = {
     deleteProduct: {
         label: "Delete Product",
         method: "DELETE",
-        request: "/products/1",
+        request: "/delete-product/1",
         response: { "message": "Product deleted successfully" }
     },
     updateFullProduct: {
         label: "Update Full Product",
         method: "PUT",
-        request: "/products/1",
+        request: "/update-product",
         payload: {
             "price": 999,
             "id": 3,
@@ -62,16 +62,16 @@ const data = {
     updateProduct: {
         label: "Update Product",
         method: "PATCH",
-        request: "/products/1",
+        request: "/update-product",
         payload: {
-            "price": 999,
-            "id": 3,
-            "name": "iPhone 17",
-            "description": "Latest Apple smartphone"
+                "id": 1,
+                "updated_fields": {
+                    "price": 1199
+                }
         },
         response: {
             "message": "Product partially updated",
-            "product": { "id": 3, "name": "iPhone 18", "description": "Latest Apple smartphone", "price": 999 }
+            "product": { "id": 1, "name": "iPhone 18", "description": "Latest Apple smartphone", "price": 1999 }
         }
     },
     registerUser: {
@@ -179,4 +179,3 @@ function copyToClipboard(text) {
             console.error('Failed to copy!', err);
         });
 }
-
